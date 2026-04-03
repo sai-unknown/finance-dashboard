@@ -1,12 +1,17 @@
 import { transactions } from "../data/transactions";
 import { data } from "../data/monthly_balc";
+import { pidata } from "../data/categoricialBudget";
+
 import {
-    LineChart
-    , Line,
+    LineChart,
+    Line,
     XAxis,
     YAxis,
     Tooltip,
     ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell,
 } from "recharts";
 
 function dashboard() {
@@ -55,6 +60,35 @@ function dashboard() {
                         <Tooltip />
                         <Line type="monotone" dataKey="balance" stroke="#8884d8" />
                     </LineChart>
+                </ResponsiveContainer>
+            </div>
+
+            <div className="bg-white p-5 mt-5 rounded shadow">
+                <h3 className="mb-3 font-bold">Category-wise Breakdown</h3>
+
+                <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                        <Pie
+                            data={pidata}
+                            dataKey="value"
+                            nameKey="category"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={100}
+                            label={({ name }) => name}
+                        >
+                            {pidata.map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={`hsl(${(index * 50) % 360}, 90%, 70%)`}
+                                />
+                            ))}
+                        </Pie>
+                        <Tooltip
+                            cursor={{ fill: 'rgba(0, 0, 0, 0.04)' }}
+                            formatter={(value, name) => [`₹${value.toLocaleString()}`, name]}
+                        />
+                    </PieChart>
                 </ResponsiveContainer>
             </div>
         </div>
