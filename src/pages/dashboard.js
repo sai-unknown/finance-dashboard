@@ -1,98 +1,164 @@
-import { transactions } from "../data/transactions";
-import { data } from "../data/monthly_balc";
-import { pidata } from "../data/categoricialBudget";
-
+import { useContext, useState } from "react";
+import { AppContext } from "../context/AppContext";
 import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
-function dashboard() {
+function Dashboard() {
+  const { transactions } = useContext(AppContext);
 
-    const income = transactions.filter((t) => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
-    const expenses = transactions.filter((t) => t.type === "expense").reduce((acc, t) => acc + t.amount, 0);
-    const balance = income - expenses;
+  const income = transactions
+    .filter((t) => t.type === "income")
+    .reduce((acc, t) => acc + t.amount, 0);
 
+  const expenses = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((acc, t) => acc + t.amount, 0);
 
-    return (
-        <div>
-            <h2 className="text-2xl font-bold mb-5">Dashboard</h2>
+  const balance = income - expenses;
 
-            <div className="grid grid-cols-3 gap-5">
-                <div className="bg-white shadow p-5">
-                    <h3 className="text-gray-500">Balance</h3>
-                    <p className="text-2xl font-bold">₹ {balance.toLocaleString()}</p>
-                </div>
+  const categoryData = Object.values(
+    transactions
+      .filter((t) => t.type === "expense")
+      .reduce((acc, curr) => {
+        if (!acc[curr.category]) {
+          acc[curr.category] = { category: curr.category, value: 0 };
+        }
+        acc[curr.category].value += curr.amount;
+        return acc;
+      }, {})
+  );
 
-                <div className="bg-white shadow p-5 rounded">
-                    <h3 className="text-gray-500">Income</h3>
-                    <p className="text-2xl font-bold text-green-500">₹ {income.toLocaleString()}</p>
-                </div>
+  const [selectedYear, setSelectedYear] = useState(
+    new Date().getFullYear()
+  );
 
-                <div className="bg-white shadow p-5 rounded">
-                    <h3 className="text-gray-500">Expenses</h3>
-                    <p className="text-2xl font-bold text-red-500">₹ {expenses.toLocaleString()}</p>
-                </div>
-            </div>
+  const years = [
+    ...new Set(
+      transactions.map((t) => new Date(t.date).getFullYear())
+    ),
+  ];
 
-            <div className="bg-white p-5 mt-5 rounded shadow flex flex-wrap justify-center">
-                {/* <div className="flex justify-between items-center mb-5">
-                    <h3 className="text-lg font-bold">Monthly Balance</h3>
-                    <select className="border rounded p-2">
-                        <option>2024</option>
-                        <option>2023</option>
-                        <option>2022</option>
-                    </select>
-                </div> */}
-                <h3 className="mb-3 font-bold" flex justify-center> Balance Over Time </h3>
+  const monthlyData = Array.from({ length: 12 }, (_, i) => {
+    const month = i + 1;
 
-                <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={data}>
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="balance" stroke="#8884d8" />
-                    </LineChart>
-                </ResponsiveContainer>
-            </div>
+    const monthlyTransactions = transactions.filter((t) => {
+      const date = new Date(t.date);
+      return (
+        date.getFullYear() === selectedYear &&
+        date.getMonth() + 1 === month
+      );
+    });
 
-            <div className="bg-white p-5 mt-5 rounded shadow flex flex-wrap justify-center">
-                <h3 className="mb-3 font-bold">Category-wise Breakdown</h3>
+    const inc = monthlyTransactions
+      .filter((t) => t.type === "income")
+      .reduce((acc, t) => acc + t.amount, 0);
 
-                <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                        <Pie
-                            data={pidata}
-                            dataKey="value"
-                            nameKey="category"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={100}
-                            label={({ name }) => name}
-                        >
-                            {pidata.map((entry, index) => (
-                                <Cell
-                                    key={`cell-${index}`}
-                                    fill={`hsl(${(index * 50) % 360}, 90%, 70%)`}
-                                />
-                            ))}
-                        </Pie>
-                        <Tooltip
-                            cursor={{ fill: 'rgba(0, 0, 0, 0.04)' }}
-                            formatter={(value, name) => [`₹${value.toLocaleString()}`, name]}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
+    const exp = monthlyTransactions
+      .filter((t) => t.type === "expense")
+      .reduce((acc, t) => acc + t.amount, 0);
+
+    return {
+      month: new Date(0, i).toLocaleString("default", {
+        month: "short",
+      }),
+      balance: inc - exp,
+    };
+  });
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-5">Dashboard</h2>
+
+      <div className="grid grid-cols-3 gap-5">
+        <div className="bg-white shadow p-5">
+          <h3 className="text-gray-500">Balance</h3>
+          <p className="text-2xl font-bold">
+            ₹ {balance.toLocaleString()}
+          </p>
         </div>
-    );
+
+        <div className="bg-white shadow p-5 rounded">
+          <h3 className="text-gray-500">Income</h3>
+          <p className="text-2xl font-bold text-green-500">
+            ₹ {income.toLocaleString()}
+          </p>
+        </div>
+
+        <div className="bg-white shadow p-5 rounded">
+          <h3 className="text-gray-500">Expenses</h3>
+          <p className="text-2xl font-bold text-red-500">
+            ₹ {expenses.toLocaleString()}
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white p-5 mt-5 rounded shadow">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold">Monthly Balance</h3>
+
+          <select
+            className="border p-2 rounded"
+            value={selectedYear}
+            onChange={(e) =>
+              setSelectedYear(Number(e.target.value))
+            }
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={monthlyData}>
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="balance" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="bg-white p-5 mt-5 rounded shadow">
+        <h3 className="mb-3 font-bold text-center">
+          Category-wise Breakdown
+        </h3>
+
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={categoryData}
+              dataKey="value"
+              nameKey="category"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              label
+            >
+              {categoryData.map((entry, index) => (
+                <Cell
+                  key={index}
+                  fill={`hsl(${(index * 50) % 360}, 70%, 60%)`}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
 }
 
-export default dashboard;
+export default Dashboard;

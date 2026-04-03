@@ -1,24 +1,29 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/sidebar";
-import Dashboard from "./pages/dashboard";
 import Header from "./components/header";
-import Transactions from "./pages/transactionsPage";
-import { useState } from "react";
+import Dashboard from "./pages/dashboard";
+import Transaction from "./pages/transactionsPage";
+import Insights from "./pages/insights";
 
 function App() {
-  const [role, setRole] = useState("viewer");
-
   return (
-    <div className="flex">
-      <Sidebar />
+    <Router>
+      <div className="flex bg-gray-100 min-h-screen">
+        <Sidebar />
 
-      <div className="flex-1">
-        <Header role={role} setRole={setRole} />
-        <div className="p-5">
-          <Dashboard />
-          <Transactions role={role} />
+        <div className="flex-1">
+          <Header />
+
+          <div className="p-5">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/transactions" element={<Transaction />} />
+              <Route path="/insights" element={<Insights />} />
+            </Routes>
+          </div>
         </div>
       </div>
-    </div>
+    </Router>
   );
 }
 

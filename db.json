@@ -1,0 +1,68 @@
+{
+  "transactions": [
+    {
+      "id": "9LmNoPqRsTuVx",
+      "type": "expense",
+      "amount": 3000,
+      "category": "Shopping",
+      "date": "2026-03-20"
+    },
+    {
+      "id": "Pq8RstU1vWxYz",
+      "type": "income",
+      "amount": 55000,
+      "category": "Salary",
+      "date": "2025-11-05"
+    },
+    {
+      "id": "Xy7AbC92LmN0Q",
+      "type": "expense",
+      "amount": 7000,
+      "category": "Food",
+      "date": "2025-11-12"
+    },
+    {
+      "id": "aK9xT2LmPqR8Z",
+      "type": "income",
+      "amount": 53000,
+      "category": "Salary",
+      "date": "2025-12-05"
+    },
+    {
+      "id": "Zx1CvBnM8QaLp",
+      "type": "expense",
+      "amount": 10000,
+      "category": "Travel",
+      "date": "2025-12-18"
+    },
+    {
+      "category": "Travel",
+      "amount": 15000,
+      "type": "expense",
+      "date": "2026-03-03",
+      "id": "Odh5PWhHq4E"
+    },
+    {
+      "category": "Food",
+      "amount": 5000,
+      "type": "expense",
+      "date": "2026-03-10",
+      "id": "Q9r2Xy7LmN0"
+    },
+    {
+      "category": "Salary",
+      "amount": 60000,
+      "type": "income",
+      "date": "2026-03-01",
+      "id": "R8sT1vWxYzA"
+    },
+    {
+      "category": "Entertainment",
+      "amount": 8000,
+      "type": "expense",
+      "date": "2026-03-15",
+      "id": "S7uVxYzA9Lm"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
