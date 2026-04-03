@@ -42,7 +42,7 @@ function dashboard() {
                 </div>
             </div>
 
-            <div className="bg-white p-5 mt-5 rounded shadow">
+            <div className="bg-white p-5 mt-5 rounded shadow flex flex-wrap justify-center">
                 {/* <div className="flex justify-between items-center mb-5">
                     <h3 className="text-lg font-bold">Monthly Balance</h3>
                     <select className="border rounded p-2">
@@ -63,7 +63,7 @@ function dashboard() {
                 </ResponsiveContainer>
             </div>
 
-            <div className="bg-white p-5 mt-5 rounded shadow">
+            <div className="bg-white p-5 mt-5 rounded shadow flex flex-wrap justify-center">
                 <h3 className="mb-3 font-bold">Category-wise Breakdown</h3>
 
                 <ResponsiveContainer width="100%" height={300}>
