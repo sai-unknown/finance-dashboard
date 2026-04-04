@@ -6,6 +6,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `json-server --watch db.json --port 5000
+
+Run the json server on port 5000.\
+Open [http://localhost:5000](http://localhost:5000/transactions) to view it in your browser for endpoints.
+
+
 ### `npm start`
 
 Runs the app in the development mode.\
