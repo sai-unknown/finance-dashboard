@@ -1,4 +1,3 @@
-import { type } from "@testing-library/user-event/dist/type";
 import { useEffect, useState } from "react";
 import {
   PieChart,
@@ -16,9 +15,10 @@ function Insights() {
   const COLORS = ["#4F46E5", "#22C55E", "#F59E0B", "#EF4444", "#06B6D4"];
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [format, setFormat] = useState("json")
+  const [format, setFormat] = useState("json");
   const [error, setError] = useState("");
 
+  // ------------------------- Fetch Transactions -------------------------
   useEffect(() => {
     fetch("http://localhost:5000/transactions")
       .then(res => res.json())
@@ -28,26 +28,21 @@ function Insights() {
       })
       .catch(() => {
         setError("Failed to load transactions. Please try again.");
-        setLoading(false)
+        setLoading(false);
       });
   }, []);
 
+  // ------------------------- Loading & Error States -------------------------
   if (loading) {
     return (
       <div className="p-6 flex justify-center items-center h-40">
-        <div className="animate-pulse text-gray-400">
-          Loading insights...
-        </div>
+        <div className="animate-pulse text-gray-400">Loading insights...</div>
       </div>
     );
   }
 
   if (error) {
-    return (
-      <div className="p-6 text-center text-red-500">
-        {error}
-      </div>
-    );
+    return <div className="p-6 text-center text-red-500">{error}</div>;
   }
 
   if (!transactions.length) {
@@ -58,18 +53,16 @@ function Insights() {
     );
   }
 
+  // ------------------------- Calculations -------------------------
   const expenses = transactions.filter(t => t.type === "expense");
   const totalExpenses = expenses.reduce((acc, t) => acc + t.amount, 0);
 
   const categoryTotals = {};
   expenses.forEach(t => {
-    categoryTotals[t.category] =
-      (categoryTotals[t.category] || 0) + t.amount;
+    categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
   });
 
-  const topCategory = Object.entries(categoryTotals).sort(
-    (a, b) => b[1] - a[1]
-  )[0];
+  const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
 
   const now = new Date();
   const currentMonth = now.getMonth();
@@ -79,10 +72,7 @@ function Insights() {
   const currentMonthExpense = expenses
     .filter(t => {
       const d = new Date(t.date);
-      return (
-        d.getMonth() === currentMonth &&
-        d.getFullYear() === currentYear
-      );
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     })
     .reduce((acc, t) => acc + t.amount, 0);
 
@@ -91,8 +81,7 @@ function Insights() {
       const d = new Date(t.date);
       return (
         d.getMonth() === lastMonth &&
-        d.getFullYear() ===
-        (currentMonth === 0 ? currentYear - 1 : currentYear)
+        d.getFullYear() === (currentMonth === 0 ? currentYear - 1 : currentYear)
       );
     })
     .reduce((acc, t) => acc + t.amount, 0);
@@ -100,320 +89,148 @@ function Insights() {
   const difference = currentMonthExpense - lastMonthExpense;
 
   let insightMessage = "";
+  if (totalExpenses > 30000) insightMessage = `⚠️ High spending, especially in ${topCategory?.[0] || "some categories"}.`;
+  else if (totalExpenses > 15000) insightMessage = "🙂 You're doing well, but keep monitoring spending.";
+  else insightMessage = "😄 Great job! You're managing your finances well.";
 
-  if (totalExpenses > 30000) {
-    insightMessage = `⚠️ Your spending is high, especially in ${topCategory?.[0] || "some categories"
-      }.`;
-  } else if (totalExpenses > 15000) {
-    insightMessage =
-      "🙂 You're doing well, but keep an eye on your spending.";
-  } else {
-    insightMessage =
-      "😄 Great job! You're managing your finances well.";
-  }
-
-  const pieData = Object.entries(categoryTotals).map(
-    ([name, value]) => ({
-      name,
-      value,
-    })
-  );
+  const pieData = Object.entries(categoryTotals).map(([name, value]) => ({ name, value }));
 
   const monthlyData = {};
-
   expenses.forEach(t => {
     const d = new Date(t.date);
-    const key = d.toLocaleString("default", {
-      month: "short",
-      year: "numeric",
-    });
-
-    monthlyData[key] =
-      (monthlyData[key] || 0) + t.amount;
+    const key = d.toLocaleString("default", { month: "short", year: "numeric" });
+    monthlyData[key] = (monthlyData[key] || 0) + t.amount;
   });
 
-  const categoryPercentages = Object.entries(categoryTotals).map(
-    ([category, amount]) => ({
-      category,
-      percent: ((amount / totalExpenses) * 100).toFixed(1),
-    })
-  );
-
-  const totalIncome = transactions
-    .filter(t => t.type === "income")
-    .reduce((acc, t) => acc + t.amount, 0);
-
-  const savingsRate = totalIncome
-    ? (((totalIncome - totalExpenses) / totalIncome) * 100).toFixed(1)
-    : 0;
-
-  const expenseRatio = totalIncome
-    ? ((totalExpenses / totalIncome) * 100).toFixed(1)
-    : 0;
+  const totalIncome = transactions.filter(t => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
+  const savingsRate = totalIncome ? (((totalIncome - totalExpenses) / totalIncome) * 100).toFixed(1) : 0;
+  const expenseRatio = totalIncome ? ((totalExpenses / totalIncome) * 100).toFixed(1) : 0;
 
   const topCategoryInsight = topCategory
-    ? `You spent most on ${topCategory[0]} (${(
-      (topCategory[1] / totalExpenses) *
-      100
-    ).toFixed(1)}%)`
+    ? `You spent most on ${topCategory[0]} (${((topCategory[1] / totalExpenses) * 100).toFixed(1)}%)`
     : "";
 
-  const categoryGrowthInsights = Object.keys(categoryTotals).map(
-    category => {
-      const current = expenses
-        .filter(t => {
-          const d = new Date(t.date);
-          return (
-            t.category === category &&
-            d.getMonth() === currentMonth &&
-            d.getFullYear() === currentYear
-          );
-        })
-        .reduce((a, t) => a + t.amount, 0);
-
-      const previous = expenses
-        .filter(t => {
-          const d = new Date(t.date);
-          return (
-            t.category === category &&
-            d.getMonth() === lastMonth &&
-            d.getFullYear() ===
-            (currentMonth === 0 ? currentYear - 1 : currentYear)
-          );
-        })
-        .reduce((a, t) => a + t.amount, 0);
-
-      if (previous === 0) return null;
-
-      const change = ((current - previous) / previous) * 100;
-
-      return {
-        category,
-        change: change.toFixed(1),
-      };
-    }
-  ).filter(Boolean);
-
+  // AI Insights
   const aiInsights = [];
-
-  // Top category insight
-  if (topCategoryInsight) {
-    aiInsights.push(topCategoryInsight);
-  }
-
-  // Month-over-month category growth
-  categoryGrowthInsights.forEach(c => {
-    if (c.change > 0) {
-      aiInsights.push(`⚠️ ${c.category} spending increased by ${c.change}% compared to last month.`);
-    } else if (c.change < 0) {
-      aiInsights.push(`✅ ${c.category} spending decreased by ${Math.abs(c.change)}% compared to last month.`);
-    } else {
-      aiInsights.push(`ℹ️ ${c.category} spending remained stable.`);
-    }
+  if (topCategoryInsight) aiInsights.push(topCategoryInsight);
+  Object.keys(categoryTotals).forEach(category => {
+    const current = expenses
+      .filter(t => new Date(t.date).getMonth() === currentMonth && t.category === category)
+      .reduce((a, t) => a + t.amount, 0);
+    const previous = expenses
+      .filter(t => new Date(t.date).getMonth() === lastMonth && t.category === category)
+      .reduce((a, t) => a + t.amount, 0);
+    if (previous === 0) return;
+    const change = ((current - previous) / previous) * 100;
+    if (change > 0) aiInsights.push(`⚠️ ${category} spending increased by ${change.toFixed(1)}% compared to last month.`);
+    else if (change < 0) aiInsights.push(`✅ ${category} spending decreased by ${Math.abs(change).toFixed(1)}% compared to last month.`);
+    else aiInsights.push(`ℹ️ ${category} spending remained stable.`);
   });
+  if (totalExpenses > 30000) aiInsights.push(`⚠️ Total expenses this month: ₹${totalExpenses}. Consider reviewing spending.`);
+  else if (totalExpenses > 15000) aiInsights.push(`🙂 Moderate spending: ₹${totalExpenses}. Keep monitoring.`);
+  else aiInsights.push(`😄 Low spending this month: ₹${totalExpenses}.`);
+  if (savingsRate < 10) aiInsights.push(`⚠️ Savings rate is low (${savingsRate}%). Try to save more.`);
+  else aiInsights.push(`✅ Savings rate is healthy (${savingsRate}%).`);
 
-  // Overall spending alert
-  if (totalExpenses > 30000) {
-    aiInsights.push(`⚠️ Your total expenses are high this month: ₹${totalExpenses}. Consider reviewing your spending.`);
-  } else if (totalExpenses > 15000) {
-    aiInsights.push(`🙂 Your spending is moderate: ₹${totalExpenses}. Keep monitoring your expenses.`);
-  } else {
-    aiInsights.push(`😄 Great! Your spending is low this month: ₹${totalExpenses}.`);
-  }
+  const lineData = Object.entries(monthlyData).map(([month, amount]) => ({ month, amount }));
 
-  // Savings rate insight
-  if (savingsRate < 10) {
-    aiInsights.push(`⚠️ Your savings rate is low (${savingsRate}%). Try to save more for future goals.`);
-  } else {
-    aiInsights.push(`✅ Your savings rate is healthy (${savingsRate}%).`);
-  }
-
-  const lineData = Object.entries(monthlyData).map(
-    ([month, amount]) => ({
-      month,
-      amount,
-    })
-  );
-
-  // DOWNLOAD FUNCTION
-
+  // ------------------------- Download Function -------------------------
   const convertData = () => {
-    if (format === "json") {
-      return {
-        content: JSON.stringify(transactions, null, 2),
-        type: "application/json",
-        extension: "json",
-      };
-    }
-
+    if (format === "json") return { content: JSON.stringify(transactions, null, 2), type: "application/json", extension: "json" };
     if (format === "csv") {
       const headers = Object.keys(transactions[0]).join(",");
-      const rows = transactions.map(t =>
-        Object.values(t).join(",")
-      );
-
-      return {
-        content: [headers, ...rows].join("\n"),
-        type: "text/csv",
-        extension: "csv",
-      };
+      const rows = transactions.map(t => Object.values(t).join(","));
+      return { content: [headers, ...rows].join("\n"), type: "text/csv", extension: "csv" };
     }
   };
 
   const handleDownload = () => {
     if (!transactions.length) return;
-
     const { content, type, extension } = convertData();
-
     const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = `transactions.${extension}`;
     a.click();
-
     URL.revokeObjectURL(url);
   };
 
-
+  // ------------------------- JSX -------------------------
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6 bg-[#F9FAFB] min-h-screen">
       <h1 className="text-2xl font-bold">Financial Insights</h1>
 
+      {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-        <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-          <p className="text-sm text-gray-500">Top Spending Category</p>
-          <h2 className="text-xl font-semibold">
-            {topCategory?.[0] || "N/A"}
-          </h2>
-          <p className="text-gray-600">
-            ₹ {topCategory?.[1] || 0}
-          </p>
-        </div>
-
-        <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-          <p className="text-sm text-gray-500">Monthly Comparison</p>
-          <h2 className="text-xl font-semibold">
-            ₹ {currentMonthExpense} vs ₹ {lastMonthExpense}
-          </h2>
-          <p className="text-gray-600">
-            {difference > 0
-              ? `↑ ₹${difference} more than last month`
-              : `↓ ₹${Math.abs(difference)} less than last month`}
-          </p>
-        </div>
-
-        <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-          <p className="text-sm text-gray-500">Insight</p>
-          <p className="text-lg">{insightMessage}</p>
-        </div>
-
-        <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-          <p className="text-sm text-gray-500">Card 1</p>
-          <h2 className="text-lg">Other Insights</h2>
-        </div>
-
-
-        <div className="bg-white shadow rounded-2xl p-4 space-y-2">
-          <h2 className="text-lg font-semibold mb-4">
-            Insights Ratio
-          </h2>
-          <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-            <p>Savings Rate</p>
-            <h2>{savingsRate}%</h2>
+        {[{
+          label: "Top Spending Category",
+          value: topCategory?.[0] || "N/A",
+          sub: `₹ ${topCategory?.[1] || 0}`,
+        }, {
+          label: "Monthly Comparison",
+          value: `₹ ${currentMonthExpense} vs ₹ ${lastMonthExpense}`,
+          sub: difference > 0 ? `↑ ₹${difference}` : `↓ ₹${Math.abs(difference)}`,
+        }, {
+          label: "Insight",
+          value: insightMessage,
+        }].map((card, i) => (
+          <div key={i} className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
+            <p className="text-sm text-gray-500">{card.label}</p>
+            <h2 className="text-xl font-semibold">{card.value}</h2>
+            {card.sub && <p className="text-gray-600">{card.sub}</p>}
           </div>
-
-          <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-            <p>Expense Ratio</p>
-            <h2>{expenseRatio}</h2>
-          </div>
-        </div>
-
-        <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-          <p className="text-sm text-gray-500">Card 2</p>
-          <h2 className="text-lg">Other Insights</h2>
-        </div>
+        ))}
       </div>
 
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
+        {/* Pie Chart */}
         <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-          <h2 className="text-lg font-semibold mb-4 flex justify-center">
-            Spending by Category
-          </h2>
-
+          <h2 className="text-lg font-semibold mb-4 text-center">Spending by Category</h2>
           <ResponsiveContainer width="100%" height={250}>
             {pieData.length === 0 ? (
-              <p className="text-gray-500">No expense data found to display.</p>
+              <p className="text-gray-500 text-center">No expense data found.</p>
             ) : (
               <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  label
-                  isAnimationActive={true}
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell
-                      key={index}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
+                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label isAnimationActive>
+                  {pieData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
                 </Pie>
                 <Tooltip />
-              </PieChart>)}
+              </PieChart>
+            )}
           </ResponsiveContainer>
         </div>
 
+        {/* Line Chart */}
         <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-          <h2 className="text-lg font-semibold mb-4 flex justify-center">
-            Monthly Spending Trend
-          </h2>
-
+          <h2 className="text-lg font-semibold mb-4 text-center">Monthly Spending Trend</h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={lineData}>
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="amount"
-                stroke="#4F46E5"
-              />
+              <Line type="monotone" dataKey="amount" stroke="#4F46E5" />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
+      {/* AI Insights */}
       <div className="bg-white shadow rounded-2xl p-4">
-        <h2 className="text-lg font-semibold mb-4">
-          Smart Insights
-        </h2>
-
+        <h2 className="text-lg font-semibold mb-4">Smart Insights</h2>
         <ul className="space-y-2">
           {aiInsights.map((insight, i) => (
-            <li
-              key={i}
-              className="text-gray-700 bg-gray-50 p-2 rounded-lg"
-            >
-              {insight}
-            </li>
+            <li key={i} className="text-gray-700 bg-gray-50 p-2 rounded-lg">{insight}</li>
           ))}
         </ul>
       </div>
 
+      {/* Download Section */}
       <div className="bg-white shadow rounded-2xl p-4 w-max">
         <h2 className="text-lg font-semibold mb-4">
           Download
         </h2>
-
-        {/* Element from Uiverse.io by Javierrocadev */}
         <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
           <div className="group overflow-hidden bg-neutral-50 rounded-xl bg-gradient-to-tr from-cyan-800 via-cyan-700 to-cyan-500 text-gray-50">
             <div className="before:duration-700 before:absolute before:w-28 before:h-28 before:bg-transparent before:blur-none before:border-8 before:opacity-50 before:rounded-full before:-left-4 before:-top-12 w-64 h-48  flex flex-col justify-between relative z-10 group-hover:before:top-28 group-hover:before:left-44 group-hover:before:scale-125 group-hover:before:blur">
@@ -456,8 +273,6 @@ function Insights() {
           </div>
         </div>
       </div>
-
-
     </div>
   );
 }
