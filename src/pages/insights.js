@@ -1,3 +1,4 @@
+import { type } from "@testing-library/user-event/dist/type";
 import { useEffect, useState } from "react";
 import {
   PieChart,
@@ -15,6 +16,7 @@ function Insights() {
   const COLORS = ["#4F46E5", "#22C55E", "#F59E0B", "#EF4444", "#06B6D4"];
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [format, setFormat] = useState("json")
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -137,6 +139,18 @@ function Insights() {
     })
   );
 
+  const totalIncome = transactions
+    .filter(t => t.type === "income")
+    .reduce((acc, t) => acc + t.amount, 0);
+
+  const savingsRate = totalIncome
+    ? (((totalIncome - totalExpenses) / totalIncome) * 100).toFixed(1)
+    : 0;
+
+  const expenseRatio = totalIncome
+    ? ((totalExpenses / totalIncome) * 100).toFixed(1)
+    : 0;
+
   const topCategoryInsight = topCategory
     ? `You spent most on ${topCategory[0]} (${(
       (topCategory[1] / totalExpenses) *
@@ -182,21 +196,37 @@ function Insights() {
 
   const aiInsights = [];
 
-  if (topCategoryInsight) aiInsights.push(topCategoryInsight);
+  // Top category insight
+  if (topCategoryInsight) {
+    aiInsights.push(topCategoryInsight);
+  }
 
+  // Month-over-month category growth
   categoryGrowthInsights.forEach(c => {
     if (c.change > 0) {
-      aiInsights.push(
-        `${c.category} spending increased by ${c.change}%`
-      );
+      aiInsights.push(`⚠️ ${c.category} spending increased by ${c.change}% compared to last month.`);
     } else if (c.change < 0) {
-      aiInsights.push(
-        `${c.category} spending decreased by ${Math.abs(
-          c.change
-        )}%`
-      );
+      aiInsights.push(`✅ ${c.category} spending decreased by ${Math.abs(c.change)}% compared to last month.`);
+    } else {
+      aiInsights.push(`ℹ️ ${c.category} spending remained stable.`);
     }
   });
+
+  // Overall spending alert
+  if (totalExpenses > 30000) {
+    aiInsights.push(`⚠️ Your total expenses are high this month: ₹${totalExpenses}. Consider reviewing your spending.`);
+  } else if (totalExpenses > 15000) {
+    aiInsights.push(`🙂 Your spending is moderate: ₹${totalExpenses}. Keep monitoring your expenses.`);
+  } else {
+    aiInsights.push(`😄 Great! Your spending is low this month: ₹${totalExpenses}.`);
+  }
+
+  // Savings rate insight
+  if (savingsRate < 10) {
+    aiInsights.push(`⚠️ Your savings rate is low (${savingsRate}%). Try to save more for future goals.`);
+  } else {
+    aiInsights.push(`✅ Your savings rate is healthy (${savingsRate}%).`);
+  }
 
   const lineData = Object.entries(monthlyData).map(
     ([month, amount]) => ({
@@ -205,6 +235,46 @@ function Insights() {
     })
   );
 
+  // DOWNLOAD FUNCTION
+
+  const convertData = () => {
+    if (format === "json") {
+      return {
+        content: JSON.stringify(transactions, null, 2),
+        type: "application/json",
+        extension: "json",
+      };
+    }
+
+    if (format === "csv") {
+      const headers = Object.keys(transactions[0]).join(",");
+      const rows = transactions.map(t =>
+        Object.values(t).join(",")
+      );
+
+      return {
+        content: [headers, ...rows].join("\n"),
+        type: "text/csv",
+        extension: "csv",
+      };
+    }
+  };
+
+  const handleDownload = () => {
+    if (!transactions.length) return;
+
+    const { content, type, extension } = convertData();
+
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transactions.${extension}`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
 
 
   return (
@@ -241,16 +311,12 @@ function Insights() {
         </div>
 
         <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-          <p className="text-sm text-gray-500">Card2</p>
-          <h2 className="text-lg">Details</h2>
+          <p className="text-sm text-gray-500">Card 1</p>
+          <h2 className="text-lg">Other Insights</h2>
         </div>
 
-        <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
-          <p className="text-sm text-gray-500">Card2</p>
-          <h2 className="text-lg">Details</h2>
-        </div>
 
-        {/* <div className="bg-white shadow rounded-2xl p-4 space-y-2">
+        <div className="bg-white shadow rounded-2xl p-4 space-y-2">
           <h2 className="text-lg font-semibold mb-4">
             Insights Ratio
           </h2>
@@ -263,7 +329,12 @@ function Insights() {
             <p>Expense Ratio</p>
             <h2>{expenseRatio}</h2>
           </div>
-        </div> */}
+        </div>
+
+        <div className="bg-white shadow rounded-2xl p-4 transition transform hover:scale-105 hover:shadow-lg">
+          <p className="text-sm text-gray-500">Card 2</p>
+          <h2 className="text-lg">Other Insights</h2>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -351,17 +422,34 @@ function Insights() {
                 <p className="subtitle">Access your document instantly, simply click the download link.</p>
               </div>
               <div className="w-full flex flex-row justify-between z-10">
-                <a className="hover:opacity-90 py-3 bg-cyan-50 w-full flex justify-center" href="#">
-                  <svg y="0" xmlns="http://www.w3.org/2000/svg" x="0" width="100" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" height="100" class="w-6 h-6  stroke-cyan-800">
-                    <path stroke-width="8" stroke-linejoin="round" stroke-linecap="round" fill="none" d="M18.3,65.8v4A11.9,11.9,0,0,0,30.2,81.7H69.8A11.9,11.9,0,0,0,81.7,69.8v-4M65.8,50,50,65.8m0,0L34.2,50M50,65.8V18.3" class="">
-                    </path>
+                <a
+                  onClick={handleDownload}
+                  className="cursor-pointer hover:opacity-90 py-3 bg-cyan-50 w-full flex items-center justify-center gap-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 100 100"
+                    className="w-6 h-6 stroke-cyan-800"
+                  >
+                    <path
+                      strokeWidth="8"
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
+                      fill="none"
+                      d="M18.3,65.8v4A11.9,11.9,0,0,0,30.2,81.7H69.8A11.9,11.9,0,0,0,81.7,69.8v-4M65.8,50,50,65.8m0,0L34.2,50M50,65.8V18.3"
+                    />
                   </svg>
+
+                  <span className="text-sm font-medium text-cyan-800">.{format}
+                  </span>
                 </a>
-                <a className="hover:opacity-90 py-3 bg-cyan-50 w-full flex justify-center" href="#">
-                  <svg y="0" xmlns="http://www.w3.org/2000/svg" x="0" width="100" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" height="100" class="w-6 h-6  stroke-cyan-800">
-                    <path stroke-width="8" stroke-linejoin="round" stroke-linecap="round" fill="none" d="M21.9,50h0M50,50h0m28.1,0h0M25.9,50a4,4,0,1,1-4-4A4,4,0,0,1,25.9,50ZM54,50a4,4,0,1,1-4-4A4,4,0,0,1,54,50Zm28.1,0a4,4,0,1,1-4-4A4,4,0,0,1,82.1,50Z">
-                    </path>
-                  </svg>
+                <a className="cursor-pointer hover:opacity-90 py-3 bg-cyan-50 w-full flex justify-center gap-2"
+                  onClick={() =>
+                    setFormat(prev => (prev === "json" ? "csv" : "json"))
+                  }>
+                  <div class="rounded-full w-6 h-6  stroke-cyan-800 bg-clip-padding backdrop-filter border-max border-gray-100 text-gray-100 drop-shadow-lg flex items-center justify-center">
+                    <p className="text-cyan-800">.{format === "json" ? "csv" : "json"}</p>
+                  </div>
                 </a>
               </div>
             </div>
