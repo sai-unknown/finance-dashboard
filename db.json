@@ -62,7 +62,14 @@
       "type": "expense",
       "date": "2026-03-15",
       "id": "S7uVxYzA9Lm"
+    },
+    {
+      "category": "Borrowed",
+      "amount": 10000,
+      "type": "income",
+      "date": "2026-04-05",
+      "id": "pHcCnkktikQ"
     }
   ],
-  "$schema": "./node_modules/json-server/lib/server/schema.json"
+  "$schema": "./node_modules/json-server/schema.json"
 }
