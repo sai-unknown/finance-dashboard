@@ -22,17 +22,17 @@ A responsive **personal finance dashboard** built with React. It loads transacti
 
 <p align="center">
   <b>Dashboard</b><br/>
-  <img src="./docs/screenshots/dashboard.svg" alt="Dashboard with summary cards and monthly balance chart" width="720"/>
+  <img src="./docs/screenshots/dashboard.png" alt="Dashboard with summary cards and monthly balance chart" width="720"/>
 </p>
 
 <p align="center">
   <b>Transactions</b><br/>
-  <img src="./docs/screenshots/transactions.svg" alt="Transactions table with search and filters" width="720"/>
+  <img src="./docs/screenshots/transactions.png" alt="Transactions table with search and filters" width="720"/>
 </p>
 
 <p align="center">
   <b>Insights</b><br/>
-  <img src="./docs/screenshots/insights.svg" alt="Insights page with charts and smart insights" width="720"/>
+  <img src="./docs/screenshots/insights.png" alt="Insights page with charts and smart insights" width="720"/>
 </p>
 
 > **Tip:** These are vector previews that match the app structure. For real pixel captures, run the app and replace the files in [`docs/screenshots/`](./docs/screenshots/) with your own PNG or WebP images, then update the paths above if needed.
