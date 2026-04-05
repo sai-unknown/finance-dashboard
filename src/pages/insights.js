@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import arrow from "../assets/arrow-down.svg"
 import {
   PieChart,
   Pie,
