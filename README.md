@@ -1,76 +1,194 @@
-# Finance-Dashboard-UI_Assignment
+# Finance Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A responsive **personal finance dashboard** built with React. It loads transactions from a local REST API ([json-server](https://github.com/typicode/json-server)), shows balances and charts on the **Dashboard**, supports CRUD-style management on **Transactions** (admin role), and surfaces trends plus CSV/JSON export on **Insights**.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Overview
 
-### `json-server --watch db.json --port 5000
+| Area | What it does |
+|------|----------------|
+| **Dashboard** | Total balance, income, expenses; monthly balance line chart (year filter); category expense pie chart. |
+| **Transactions** | Search, filter, sort; list + table layouts by screen size; admins can add, edit, and delete rows via the API. |
+| **Insights** | Summary cards, category pie and spending trend charts, rule-based “smart” insights, downloadable data. |
 
-Run the json server on port 5000.\
-Open [http://localhost:5000](http://localhost:5000/transactions) to view it in your browser for endpoints.
+**Tech stack:** React 19, React Router 7, Recharts, Tailwind CSS, Create React App.
 
+**Data:** `db.json` holds a `transactions` array (`id`, `type`, `amount`, `category`, `date`). The UI expects the API at `http://localhost:5000/transactions`.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Screenshots
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+<p align="center">
+  <b>Dashboard</b><br/>
+  <img src="./docs/screenshots/dashboard.svg" alt="Dashboard with summary cards and monthly balance chart" width="720"/>
+</p>
 
-### `npm test`
+<p align="center">
+  <b>Transactions</b><br/>
+  <img src="./docs/screenshots/transactions.svg" alt="Transactions table with search and filters" width="720"/>
+</p>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<p align="center">
+  <b>Insights</b><br/>
+  <img src="./docs/screenshots/insights.svg" alt="Insights page with charts and smart insights" width="720"/>
+</p>
 
-### `npm run build` 
+> **Tip:** These are vector previews that match the app structure. For real pixel captures, run the app and replace the files in [`docs/screenshots/`](./docs/screenshots/) with your own PNG or WebP images, then update the paths above if needed.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Prerequisites
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Node.js** 18+ (LTS recommended)
+- **npm** (comes with Node)
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Setup
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 1. Clone and install
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+git clone <your-repo-url>
+cd finance-dashboard
+npm install
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 2. Start the mock API
 
-## Learn More
+The app reads and writes transactions through json-server on **port 5000**.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run api
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This watches [`db.json`](./db.json). You should see REST endpoints such as:
 
-### Code Splitting
+- `GET http://localhost:5000/transactions`
+- `POST http://localhost:5000/transactions`
+- `PUT http://localhost:5000/transactions/:id`
+- `DELETE http://localhost:5000/transactions/:id`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Alternative (without npm script):**
 
-### Analyzing the Bundle Size
+```bash
+npx json-server@0.17.4 --watch db.json --port 5000
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 3. Start the React app
 
-### Making a Progressive Web App
+In a **second** terminal:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+npm start
+```
 
-### Advanced Configuration
+Open [http://localhost:3000](http://localhost:3000). Keep **both** processes running while developing.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 4. Roles
 
-### Deployment
+Use the header **Role** control:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- **Viewer** — read-only transactions (no add/edit/delete).
+- **Admin** — full transaction form, CSV import, delete confirmation, pagination, and toasts for feedback.
 
-### `npm run build` fails to minify
+### 5. CSV import (Transactions, admin)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Use **Import CSV** with a header row:
+
+`type,amount,category,date`
+
+- `type`: `income` or `expense`
+- `amount`: positive number (commas allowed)
+- `category`: any label
+- `date`: `YYYY-MM-DD`
+
+A tiny example file is at [`public/sample-transactions-import.csv`](./public/sample-transactions-import.csv).
+
+### 6. Optional API base URL
+
+Create `.env` in the project root:
+
+```bash
+REACT_APP_API_URL=http://localhost:5000
+```
+
+Restart `npm start` after changing env vars. The same value is used for the global transaction fetch and transaction mutations.
+
+---
+
+## Available scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm start` | Dev server at port 3000 (hot reload). |
+| `npm run build` | Production build in `build/`. |
+| `npm test` | Jest / React Testing Library (watch mode). |
+| `npm run api` | json-server watching `db.json` on port 5000. |
+| `npm run eject` | Irreversible CRA eject (only if you know you need it). |
+
+---
+
+## Troubleshooting
+
+| Issue | What to try |
+|-------|-------------|
+| Empty data / fetch errors | Ensure `npm run api` is running and nothing else uses port **5000**. |
+| CORS | json-server allows the CRA origin by default; if you change ports or host, adjust accordingly. |
+| Blank charts | Confirm transactions include valid `date` and `type` (`income` / `expense`). |
+
+---
+
+## Project structure (high level)
+
+```
+finance-dashboard/
+├── public/
+├── src/
+│   ├── components/     # Header, Sidebar, MobileNav, …
+│   ├── context/        # AppContext, ToastContext
+│   ├── config/         # API_BASE (REACT_APP_API_URL)
+│   ├── utils/          # CSV parsing for import
+│   ├── hooks/          # useMediaQuery, …
+│   ├── pages/          # Dashboard, Transactions, Insights
+│   ├── App.js
+│   └── index.js
+├── docs/screenshots/   # README visuals
+├── db.json             # json-server data
+└── README.md
+```
+
+---
+
+## Learn more
+
+- [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started)
+- [React documentation](https://react.dev/)
+- [json-server](https://github.com/typicode/json-server)
+
+---
+
+## Manual QA checklist
+
+Run `npm run api` and `npm start`, open DevTools **Console**, then verify:
+
+| Check | Expected |
+|-------|-----------|
+| **Dashboard** | Cards and charts load; year selector works; no red errors when API is up. |
+| **Transactions** | Search / filters / sort; pagination; date on add/edit; CSV import; delete confirmation; toasts instead of blocking alerts. |
+| **Insights** | Charts render; download switches JSON/CSV and saves a file. |
+| **Role: Viewer** | No “Add transaction”, no Actions column, no edit inputs on rows. |
+| **Role: Admin** | Add / edit / save / delete work; switching **Admin → Viewer** closes the add form and exits row edit mode. |
+| **API off** | Friendly error message on pages that load data; no uncaught promise rejections. |
+| **Responsive** | Resize 320px → 1920px+; bottom nav (mobile), sidebar (desktop); no horizontal page scroll. |
+| **Console** | No errors in normal use (warnings from dev tools or extensions are OK). |
+
+Automated: `npm run build` should compile with no errors.
+
+---
+
+## License
+
+Private / assignment use

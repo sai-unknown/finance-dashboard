@@ -1,75 +1,76 @@
 {
   "transactions": [
-    {
-      "id": "9LmNoPqRsTuVx",
-      "type": "expense",
-      "amount": 3000,
-      "category": "Shopping",
-      "date": "2026-03-20"
-    },
-    {
-      "id": "Pq8RstU1vWxYz",
-      "type": "income",
-      "amount": 55000,
-      "category": "Salary",
-      "date": "2025-11-05"
-    },
-    {
-      "id": "Xy7AbC92LmN0Q",
-      "type": "expense",
-      "amount": 7000,
-      "category": "Food",
-      "date": "2025-11-12"
-    },
-    {
-      "id": "aK9xT2LmPqR8Z",
-      "type": "income",
-      "amount": 53000,
-      "category": "Salary",
-      "date": "2025-12-05"
-    },
-    {
-      "id": "Zx1CvBnM8QaLp",
-      "type": "expense",
-      "amount": 10000,
-      "category": "Travel",
-      "date": "2025-12-18"
-    },
-    {
-      "category": "Travel",
-      "amount": 15000,
-      "type": "expense",
-      "date": "2026-03-03",
-      "id": "Odh5PWhHq4E"
-    },
-    {
-      "category": "Food",
-      "amount": 5000,
-      "type": "expense",
-      "date": "2026-03-10",
-      "id": "Q9r2Xy7LmN0"
-    },
-    {
-      "category": "Salary",
-      "amount": 60000,
-      "type": "income",
-      "date": "2026-03-01",
-      "id": "R8sT1vWxYzA"
-    },
-    {
-      "category": "Entertainment",
-      "amount": 8000,
-      "type": "expense",
-      "date": "2026-03-15",
-      "id": "S7uVxYzA9Lm"
-    },
-    {
-      "category": "Borrowed",
-      "amount": 10000,
-      "type": "income",
-      "date": "2026-04-05",
-      "id": "pHcCnkktikQ"
-    }
+    { "id": "tx-001", "type": "income", "amount": 52000, "category": "Salary", "date": "2025-09-01" },
+    { "id": "tx-002", "type": "expense", "amount": 18000, "category": "Rent", "date": "2025-09-03" },
+    { "id": "tx-003", "type": "expense", "amount": 6200, "category": "Food", "date": "2025-09-08" },
+    { "id": "tx-004", "type": "expense", "amount": 3500, "category": "Transport", "date": "2025-09-11" },
+    { "id": "tx-005", "type": "expense", "amount": 2100, "category": "Utilities", "date": "2025-09-14" },
+    { "id": "tx-006", "type": "expense", "amount": 4500, "category": "Shopping", "date": "2025-09-19" },
+    { "id": "tx-007", "type": "income", "amount": 8000, "category": "Freelance", "date": "2025-09-22" },
+    { "id": "tx-008", "type": "expense", "amount": 2800, "category": "Entertainment", "date": "2025-09-25" },
+
+    { "id": "tx-009", "type": "income", "amount": 52000, "category": "Salary", "date": "2025-10-01" },
+    { "id": "tx-010", "type": "expense", "amount": 18000, "category": "Rent", "date": "2025-10-03" },
+    { "id": "tx-011", "type": "expense", "amount": 7100, "category": "Food", "date": "2025-10-07" },
+    { "id": "tx-012", "type": "expense", "amount": 12000, "category": "Travel", "date": "2025-10-12" },
+    { "id": "tx-013", "type": "expense", "amount": 3200, "category": "Healthcare", "date": "2025-10-16" },
+    { "id": "tx-014", "type": "expense", "amount": 1900, "category": "Utilities", "date": "2025-10-18" },
+    { "id": "tx-015", "type": "expense", "amount": 5500, "category": "Shopping", "date": "2025-10-23" },
+    { "id": "tx-016", "type": "income", "amount": 3500, "category": "Freelance", "date": "2025-10-28" },
+
+    { "id": "tx-017", "type": "income", "amount": 55000, "category": "Salary", "date": "2025-11-05" },
+    { "id": "tx-018", "type": "expense", "amount": 18000, "category": "Rent", "date": "2025-11-03" },
+    { "id": "tx-019", "type": "expense", "amount": 7000, "category": "Food", "date": "2025-11-12" },
+    { "id": "tx-020", "type": "expense", "amount": 4200, "category": "Transport", "date": "2025-11-14" },
+    { "id": "tx-021", "type": "expense", "amount": 6500, "category": "Education", "date": "2025-11-17" },
+    { "id": "tx-022", "type": "expense", "amount": 2200, "category": "Utilities", "date": "2025-11-19" },
+    { "id": "tx-023", "type": "expense", "amount": 3800, "category": "Entertainment", "date": "2025-11-22" },
+    { "id": "tx-024", "type": "income", "amount": 6000, "category": "Freelance", "date": "2025-11-26" },
+
+    { "id": "tx-025", "type": "income", "amount": 53000, "category": "Salary", "date": "2025-12-05" },
+    { "id": "tx-026", "type": "expense", "amount": 18000, "category": "Rent", "date": "2025-12-03" },
+    { "id": "tx-027", "type": "expense", "amount": 10000, "category": "Travel", "date": "2025-12-18" },
+    { "id": "tx-028", "type": "expense", "amount": 7800, "category": "Food", "date": "2025-12-08" },
+    { "id": "tx-029", "type": "expense", "amount": 9200, "category": "Shopping", "date": "2025-12-14" },
+    { "id": "tx-030", "type": "expense", "amount": 1500, "category": "Utilities", "date": "2025-12-20" },
+    { "id": "tx-031", "type": "income", "amount": 4500, "category": "Interest", "date": "2025-12-28" },
+
+    { "id": "tx-032", "type": "income", "amount": 55000, "category": "Salary", "date": "2026-01-01" },
+    { "id": "tx-033", "type": "expense", "amount": 18500, "category": "Rent", "date": "2026-01-03" },
+    { "id": "tx-034", "type": "expense", "amount": 6400, "category": "Food", "date": "2026-01-09" },
+    { "id": "tx-035", "type": "expense", "amount": 11000, "category": "Healthcare", "date": "2026-01-11" },
+    { "id": "tx-036", "type": "expense", "amount": 2900, "category": "Transport", "date": "2026-01-15" },
+    { "id": "tx-037", "type": "expense", "amount": 5100, "category": "Entertainment", "date": "2026-01-19" },
+    { "id": "tx-038", "type": "expense", "amount": 2300, "category": "Utilities", "date": "2026-01-22" },
+    { "id": "tx-039", "type": "income", "amount": 12000, "category": "Bonus", "date": "2026-01-25" },
+
+    { "id": "tx-040", "type": "income", "amount": 55000, "category": "Salary", "date": "2026-02-01" },
+    { "id": "tx-041", "type": "expense", "amount": 18500, "category": "Rent", "date": "2026-02-03" },
+    { "id": "tx-042", "type": "expense", "amount": 5800, "category": "Food", "date": "2026-02-07" },
+    { "id": "tx-043", "type": "expense", "amount": 7200, "category": "Shopping", "date": "2026-02-10" },
+    { "id": "tx-044", "type": "expense", "amount": 4800, "category": "Education", "date": "2026-02-14" },
+    { "id": "tx-045", "type": "expense", "amount": 2600, "category": "Transport", "date": "2026-02-18" },
+    { "id": "tx-046", "type": "expense", "amount": 3400, "category": "Entertainment", "date": "2026-02-22" },
+    { "id": "tx-047", "type": "income", "amount": 5500, "category": "Freelance", "date": "2026-02-26" },
+
+    { "id": "tx-048", "type": "income", "amount": 60000, "category": "Salary", "date": "2026-03-01" },
+    { "id": "tx-049", "type": "expense", "amount": 18500, "category": "Rent", "date": "2026-03-03" },
+    { "id": "tx-050", "type": "expense", "amount": 15000, "category": "Travel", "date": "2026-03-03" },
+    { "id": "tx-051", "type": "expense", "amount": 5000, "category": "Food", "date": "2026-03-10" },
+    { "id": "tx-052", "type": "expense", "amount": 8000, "category": "Entertainment", "date": "2026-03-15" },
+    { "id": "tx-053", "type": "expense", "amount": 3000, "category": "Shopping", "date": "2026-03-20" },
+    { "id": "tx-054", "type": "expense", "amount": 2000, "category": "Utilities", "date": "2026-03-21" },
+    { "id": "tx-055", "type": "expense", "amount": 4100, "category": "Transport", "date": "2026-03-24" },
+
+    { "id": "tx-056", "type": "income", "amount": 60000, "category": "Salary", "date": "2026-04-01" },
+    { "id": "tx-057", "type": "expense", "amount": 18500, "category": "Rent", "date": "2026-04-03" },
+    { "id": "tx-058", "type": "income", "amount": 10000, "category": "Borrowed", "date": "2026-04-05" },
+    { "id": "tx-059", "type": "expense", "amount": 6700, "category": "Food", "date": "2026-04-08" },
+    { "id": "tx-060", "type": "expense", "amount": 8900, "category": "Shopping", "date": "2026-04-12" },
+    { "id": "tx-061", "type": "expense", "amount": 3300, "category": "Healthcare", "date": "2026-04-14" },
+    { "id": "tx-062", "type": "expense", "amount": 5200, "category": "Entertainment", "date": "2026-04-18" },
+    { "id": "tx-063", "type": "expense", "amount": 2400, "category": "Utilities", "date": "2026-04-21" },
+    { "id": "tx-064", "type": "income", "amount": 4200, "category": "Freelance", "date": "2026-04-28" }
   ],
   "$schema": "./node_modules/json-server/schema.json"
 }

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Insights preview">
+  <rect width="960" height="540" fill="#f9fafb"/>
+  <rect x="0" y="0" width="200" height="540" fill="#fff" stroke="#e5e7eb"/>
+  <rect x="24" y="80" width="152" height="36" rx="8" fill="transparent" stroke="#e5e7eb"/>
+  <text x="36" y="103" fill="#374151" font-family="system-ui,sans-serif" font-size="13">Dashboard</text>
+  <rect x="24" y="128" width="152" height="36" rx="8" fill="transparent" stroke="#e5e7eb"/>
+  <text x="36" y="151" fill="#374151" font-family="system-ui,sans-serif" font-size="13">Transactions</text>
+  <rect x="24" y="176" width="152" height="36" rx="8" fill="#4f46e5"/>
+  <text x="36" y="199" fill="#fff" font-family="system-ui,sans-serif" font-size="13" font-weight="600">Insights</text>
+  <rect x="200" y="0" width="760" height="56" fill="#fff" stroke="#e5e7eb"/>
+  <text x="224" y="36" fill="#111827" font-family="system-ui,sans-serif" font-size="18" font-weight="700">Finance Dashboard</text>
+  <text x="220" y="100" fill="#111827" font-family="system-ui,sans-serif" font-size="20" font-weight="700">Financial insights</text>
+  <rect x="220" y="120" width="220" height="88" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="236" y="148" fill="#6b7280" font-family="system-ui,sans-serif" font-size="10">TOP SPENDING</text>
+  <text x="236" y="178" fill="#111827" font-family="system-ui,sans-serif" font-size="15" font-weight="600">Food</text>
+  <rect x="452" y="120" width="220" height="88" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="468" y="148" fill="#6b7280" font-family="system-ui,sans-serif" font-size="10">MONTH VS MONTH</text>
+  <text x="468" y="178" fill="#111827" font-family="system-ui,sans-serif" font-size="14" font-weight="600">¹ 12k vs ¹ 9k</text>
+  <rect x="684" y="120" width="252" height="88" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="700" y="148" fill="#6b7280" font-family="system-ui,sans-serif" font-size="10">SUMMARY</text>
+  <text x="700" y="178" fill="#111827" font-family="system-ui,sans-serif" font-size="13">Spending on track</text>
+  <rect x="220" y="224" width="340" height="200" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="340" y="252" fill="#111827" font-family="system-ui,sans-serif" font-size="13" font-weight="600" text-anchor="middle">By category</text>
+  <circle cx="390" cy="340" r="56" fill="#4f46e5" opacity="0.85"/>
+  <path d="M390 284 A56 56 0 0 1 430 360 L390 340 Z" fill="#22c55e"/>
+  <path d="M430 360 A56 56 0 0 1 350 380 L390 340 Z" fill="#f59e0b"/>
+  <rect x="572" y="224" width="364" height="200" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="754" y="252" fill="#111827" font-family="system-ui,sans-serif" font-size="13" font-weight="600" text-anchor="middle">Monthly trend</text>
+  <polyline fill="none" stroke="#4f46e5" stroke-width="2.5" points="600,360 640,340 700,350 760,320 820,330 900,300"/>
+  <rect x="220" y="436" width="716" height="88" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="236" y="464" fill="#111827" font-family="system-ui,sans-serif" font-size="13" font-weight="600">Smart insights</text>
+  <rect x="236" y="476" width="680" height="36" rx="6" fill="#f3f4f6"/>
+  <text x="248" y="499" fill="#4b5563" font-family="system-ui,sans-serif" font-size="12">You spent most on Food (32%) · Savings rate healthy</text>
+</svg>

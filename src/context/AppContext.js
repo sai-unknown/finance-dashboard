@@ -1,21 +1,55 @@
 import { createContext, useState, useEffect } from "react";
+import { API_BASE } from "../config/api";
 
 export const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const [transactions, setTransactions] = useState([]);
+  const [transactionsLoading, setTransactionsLoading] = useState(true);
+  const [transactionsError, setTransactionsError] = useState(null);
   const [role, setRole] = useState("viewer");
 
   useEffect(() => {
-    fetch("http://localhost:5000/transactions")
-      .then((res) => res.json())
-      .then((data) => setTransactions(data))
-      .catch((err) => console.error(err));
+    let cancelled = false;
+    setTransactionsLoading(true);
+    setTransactionsError(null);
+
+    fetch(`${API_BASE}/transactions`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Bad response");
+        return res.json();
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setTransactions(Array.isArray(data) ? data : []);
+        setTransactionsError(null);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setTransactionsError(
+          "Could not load transactions. Start json-server on port 5000 and refresh."
+        );
+        setTransactions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setTransactionsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
     <AppContext.Provider
-      value={{ transactions, setTransactions, role, setRole }}
+      value={{
+        transactions,
+        setTransactions,
+        transactionsLoading,
+        transactionsError,
+        role,
+        setRole,
+      }}
     >
       {children}
     </AppContext.Provider>
