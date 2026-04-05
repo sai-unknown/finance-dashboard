@@ -51,7 +51,7 @@ A responsive **personal finance dashboard** built with React. It loads transacti
 ### 1. Clone and install
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/sai-unknown/finance-dashboard
 cd finance-dashboard
 npm install
 ```
