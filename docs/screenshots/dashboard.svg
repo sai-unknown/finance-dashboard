@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Dashboard preview">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f3f4f6"/>
+      <stop offset="100%" style="stop-color:#e5e7eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <rect x="0" y="0" width="200" height="540" fill="#fff" stroke="#e5e7eb"/>
+  <rect x="24" y="80" width="152" height="36" rx="8" fill="#4f46e5"/>
+  <text x="36" y="103" fill="#fff" font-family="system-ui,sans-serif" font-size="13" font-weight="600">Dashboard</text>
+  <rect x="24" y="128" width="152" height="36" rx="8" fill="transparent" stroke="#e5e7eb"/>
+  <text x="36" y="151" fill="#374151" font-family="system-ui,sans-serif" font-size="13">Transactions</text>
+  <rect x="24" y="176" width="152" height="36" rx="8" fill="transparent" stroke="#e5e7eb"/>
+  <text x="36" y="199" fill="#374151" font-family="system-ui,sans-serif" font-size="13">Insights</text>
+  <rect x="200" y="0" width="760" height="56" fill="#fff" stroke="#e5e7eb"/>
+  <text x="224" y="36" fill="#111827" font-family="system-ui,sans-serif" font-size="18" font-weight="700">Finance Dashboard</text>
+  <rect x="220" y="80" width="220" height="100" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="236" y="108" fill="#6b7280" font-family="system-ui,sans-serif" font-size="11">BALANCE</text>
+  <text x="236" y="158" fill="#111827" font-family="system-ui,sans-serif" font-size="22" font-weight="700">¹ 12,500</text>
+  <rect x="456" y="80" width="220" height="100" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="472" y="108" fill="#6b7280" font-family="system-ui,sans-serif" font-size="11">INCOME</text>
+  <text x="472" y="158" fill="#059669" font-family="system-ui,sans-serif" font-size="22" font-weight="700">¹ 60,000</text>
+  <rect x="692" y="80" width="244" height="100" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="708" y="108" fill="#6b7280" font-family="system-ui,sans-serif" font-size="11">EXPENSES</text>
+  <text x="708" y="158" fill="#dc2626" font-family="system-ui,sans-serif" font-size="22" font-weight="700">¹ 47,500</text>
+  <rect x="220" y="200" width="716" height="300" rx="12" fill="#fff" stroke="#e5e7eb"/>
+  <text x="244" y="236" fill="#111827" font-family="system-ui,sans-serif" font-size="15" font-weight="600">Monthly balance</text>
+  <polyline fill="none" stroke="#4f46e5" stroke-width="3" points="260,420 320,380 400,400 480,340 560,360 640,300 720,320 800,280"/>
+  <text x="244" y="472" fill="#9ca3af" font-family="system-ui,sans-serif" font-size="11">Jan · Feb · Mar · Apr · May · Jun</text>
+</svg>
