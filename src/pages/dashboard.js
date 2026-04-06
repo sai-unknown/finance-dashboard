@@ -128,7 +128,7 @@ function Dashboard() {
   if (transactionsLoading) {
     return (
       <div className="min-h-[60vh]">
-        <PageSkeleton />
+        <PageSkeleton />  
       </div>
     );
   }

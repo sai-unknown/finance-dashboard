@@ -1,6 +1,6 @@
 # Finance Dashboard
 
-A responsive **personal finance dashboard** built with React. It loads transactions from a local REST API ([json-server](https://github.com/typicode/json-server)), shows balances and charts on the **Dashboard**, supports CRUD-style management on **Transactions** (admin role), and surfaces trends plus CSV/JSON export on **Insights**.
+A responsive **personal finance dashboard** built with React. It supports CRUD-style management on **Transactions** (admin role), shows balances/charts on **Dashboard**, and surfaces trends plus CSV/JSON export on **Insights**. In production, it uses Vercel serverless API routes backed by Neon Postgres.
 
 ---
 
@@ -14,7 +14,7 @@ A responsive **personal finance dashboard** built with React. It loads transacti
 
 **Tech stack:** React 19, React Router 7, Recharts, Tailwind CSS, Create React App.
 
-**Data:** `db.json` holds a `transactions` array (`id`, `type`, `amount`, `category`, `date`). The UI expects the API at `http://localhost:5000/transactions`.
+**Data model:** `transactions` (`id`, `type`, `amount`, `category`, `date`). `db.json` is used as one-time seed data when the Neon table is empty.
 
 ---
 
@@ -56,36 +56,34 @@ cd finance-dashboard
 npm install
 ```
 
-### 2. Start the mock API
+### 2. Configure environment
 
-The app reads and writes transactions through json-server on **port 5000**.
-
-```bash
-npm run api
-```
-
-This watches [`db.json`](./db.json). You should see REST endpoints such as:
-
-- `GET http://localhost:5000/transactions`
-- `POST http://localhost:5000/transactions`
-- `PUT http://localhost:5000/transactions/:id`
-- `DELETE http://localhost:5000/transactions/:id`
-
-**Alternative (without npm script):**
+Copy `.env.example` to `.env.local` and set values as needed:
 
 ```bash
-npx json-server@0.17.4 --watch db.json --port 5000
+REACT_APP_API_URL=http://localhost:5000
+DATABASE_URL=postgresql://...
 ```
+
+- For local development with `db.json`, use `REACT_APP_API_URL=http://localhost:5000`.
+- In Vercel production, `REACT_APP_API_URL` can be empty (same-origin `/transactions` is used).
+- `DATABASE_URL` is required for Vercel serverless API.
 
 ### 3. Start the React app
 
-In a **second** terminal:
+Start local API from `db.json`:
+
+```bash
+npm run api:local
+```
+
+Then in a second terminal:
 
 ```bash
 npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Keep **both** processes running while developing.
+Open [http://localhost:3000](http://localhost:3000).
 
 ### 4. Roles
 
@@ -107,15 +105,22 @@ Use **Import CSV** with a header row:
 
 A tiny example file is at [`public/sample-transactions-import.csv`](./public/sample-transactions-import.csv).
 
-### 6. Optional API base URL
+### 6. Vercel production deployment
 
-Create `.env` in the project root:
+1. Import the repository into Vercel.
+2. Add environment variables in Vercel project settings:
+   - `DATABASE_URL` = your Neon connection string
+   - `REACT_APP_API_URL` = optional (leave empty to use same-origin `/transactions`)
+3. Redeploy.
+4. Verify:
+   - `GET /api/health`
+   - `GET /api/transactions`
+   - App loads data from `/transactions` successfully.
 
-```bash
-REACT_APP_API_URL=http://localhost:5000
-```
+The project includes `vercel.json` rewrites:
 
-Restart `npm start` after changing env vars. The same value is used for the global transaction fetch and transaction mutations.
+- `/transactions` -> `/api/transactions`
+- `/transactions/:id` -> `/api/transactions?id=:id`
 
 ---
 
@@ -124,9 +129,9 @@ Restart `npm start` after changing env vars. The same value is used for the glob
 | Command | Description |
 |---------|-------------|
 | `npm start` | Dev server at port 3000 (hot reload). |
+| `npm run api:local` | Local API from `db.json` at port 5000. |
 | `npm run build` | Production build in `build/`. |
 | `npm test` | Jest / React Testing Library (watch mode). |
-| `npm run api` | json-server watching `db.json` on port 5000. |
 | `npm run eject` | Irreversible CRA eject (only if you know you need it). |
 
 ---
@@ -135,8 +140,8 @@ Restart `npm start` after changing env vars. The same value is used for the glob
 
 | Issue | What to try |
 |-------|-------------|
-| Empty data / fetch errors | Ensure `npm run api` is running and nothing else uses port **5000**. |
-| CORS | json-server allows the CRA origin by default; if you change ports or host, adjust accordingly. |
+| Empty data / fetch errors | On Vercel, verify `DATABASE_URL` is set and redeploy; test `/api/transactions` directly. |
+| Local dev shows API errors | Ensure `npm run api:local` is running and `REACT_APP_API_URL=http://localhost:5000`. |
 | Blank charts | Confirm transactions include valid `date` and `type` (`income` / `expense`). |
 
 ---
@@ -156,7 +161,7 @@ finance-dashboard/
 │   ├── App.js
 │   └── index.js
 ├── docs/screenshots/   # README visuals
-├── db.json             # json-server data
+├── db.json             # seed data for first Neon bootstrap
 └── README.md
 ```
 
@@ -166,13 +171,13 @@ finance-dashboard/
 
 - [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started)
 - [React documentation](https://react.dev/)
-- [json-server](https://github.com/typicode/json-server)
+- [Vercel Functions](https://vercel.com/docs/functions/serverless-functions)
 
 ---
 
 ## Manual QA checklist
 
-Run `npm run api` and `npm start`, open DevTools **Console**, then verify:
+Run `npm run api:local` and `npm start`, open DevTools **Console**, then verify:
 
 | Check | Expected |
 |-------|-----------|

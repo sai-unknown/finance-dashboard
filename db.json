@@ -71,6 +71,5 @@
     { "id": "tx-062", "type": "expense", "amount": 5200, "category": "Entertainment", "date": "2026-04-18" },
     { "id": "tx-063", "type": "expense", "amount": 2400, "category": "Utilities", "date": "2026-04-21" },
     { "id": "tx-064", "type": "income", "amount": 4200, "category": "Freelance", "date": "2026-04-28" }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }

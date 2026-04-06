@@ -27,7 +27,7 @@ export function AppProvider({ children }) {
       .catch(() => {
         if (cancelled) return;
         setTransactionsError(
-          "Could not load transactions. Start json-server on port 5000 and refresh."
+          "Could not load transactions. Check that the `/transactions` API is reachable."
         );
         setTransactions([]);
       })
