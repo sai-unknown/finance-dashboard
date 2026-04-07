@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/transactions", "destination": "/api/transactions" },
+    {
+      "source": "/transactions/:id",
+      "destination": "/api/transactions?id=:id"
+    }
+  ]
+}
+

@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
+    "pg": "^8.20.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.14.0",
@@ -18,8 +19,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "api": "json-server --watch db.json --port 5000"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -41,7 +41,6 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.27",
-    "json-server": "^0.17.4",
     "postcss": "^8.5.8",
     "tailwindcss": "^3.4.3"
   }

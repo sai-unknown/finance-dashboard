@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { API_BASE } from "../config/api";
+import API_BASE from "../config/api.js";
 
 export const AppContext = createContext();
 
@@ -14,7 +14,7 @@ export function AppProvider({ children }) {
     setTransactionsLoading(true);
     setTransactionsError(null);
 
-    fetch(`${API_BASE}/transactions`)
+    fetch(`${API_BASE}/api/transactions`)
       .then((res) => {
         if (!res.ok) throw new Error("Bad response");
         return res.json();
@@ -27,7 +27,7 @@ export function AppProvider({ children }) {
       .catch(() => {
         if (cancelled) return;
         setTransactionsError(
-          "Could not load transactions. Start json-server on port 5000 and refresh."
+          "Could not load transactions. Check that the `/transactions` API is reachable."
         );
         setTransactions([]);
       })

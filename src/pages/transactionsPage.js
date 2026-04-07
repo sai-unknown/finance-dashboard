@@ -3,7 +3,7 @@ import { AppContext } from "../context/AppContext";
 import { useToast } from "../context/ToastContext";
 import ConfirmModal from "../components/ConfirmModal";
 import { parseTransactionsCSV } from "../utils/csvTransactions";
-import { API_BASE as API } from "../config/api";
+import API_BASE from "../config/api.js";
 
 function todayISO() {
   return new Date().toISOString().split("T")[0];
@@ -127,7 +127,7 @@ function Transaction() {
     };
 
     try {
-      const res = await fetch(`${API}/transactions`, {
+      const res = await fetch(`${API_BASE}/api/transactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(transaction),
@@ -153,7 +153,7 @@ function Transaction() {
 
   const runDelete = async (id) => {
     try {
-      const res = await fetch(`${API}/transactions/${id}`, {
+      const res = await fetch(`${API_BASE}/api/transactions/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) {
@@ -191,7 +191,7 @@ function Transaction() {
     };
 
     try {
-      const res = await fetch(`${API}/transactions/${editForm.id}`, {
+      const res = await fetch(`${API_BASE}/api/transactions/${editForm.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -235,7 +235,7 @@ function Transaction() {
     const added = [];
     for (const row of parsed.rows) {
       try {
-        const res = await fetch(`${API}/transactions`, {
+        const res = await fetch(`${API_BASE }/api/transactions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(row),
@@ -528,177 +528,51 @@ function Transaction() {
         <>
           <div className="lg:hidden">
             <ul className="space-y-3" aria-label="Transaction list">
-            {paginatedData.map((t) => (
-              <li
-                key={t.id}
-                className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 ease-out motion-reduce:transition-none hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    {editId === t.id && role === "admin" ? (
-                      <input
-                        className="mb-2 w-full rounded border border-gray-300 px-2 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
-                        value={editForm.category}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, category: e.target.value })
-                        }
-                      />
-                    ) : (
-                      <p className="truncate font-medium text-gray-900 dark:text-gray-100">
-                        {t.category || "—"}
-                      </p>
-                    )}
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {paginatedData.map((t) => (
+                <li
+                  key={t.id}
+                  className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 ease-out motion-reduce:transition-none hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
                       {editId === t.id && role === "admin" ? (
                         <input
-                          type="date"
-                          className="mt-1 w-full rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
-                          value={editForm.date || ""}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, date: e.target.value })
-                          }
-                        />
-                      ) : (
-                        <>
-                          {(t.date && String(t.date).split("T")[0]) || "—"}{" "}
-                          <span className="font-medium uppercase text-gray-600 dark:text-gray-300">
-                            · {t.type}
-                          </span>
-                        </>
-                      )}
-                    </p>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    {editId === t.id && role === "admin" ? (
-                      <input
-                        type="number"
-                        className="w-28 rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
-                        value={editForm.amount}
-                        onChange={(e) =>
-                          setEditForm({
-                            ...editForm,
-                            amount: Number(e.target.value),
-                          })
-                        }
-                      />
-                    ) : (
-                      <p
-                        className={`text-lg font-semibold tabular-nums ${
-                          t.type === "income"
-                            ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-red-600 dark:text-red-400"
-                        }`}
-                      >
-                        ₹{t.amount?.toLocaleString?.() ?? t.amount}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                {editId === t.id && role === "admin" && (
-                  <select
-                    className="mt-3 w-full rounded border border-gray-300 px-2 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
-                    value={editForm.type}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, type: e.target.value })
-                    }
-                  >
-                    <option value="income">Income</option>
-                    <option value="expense">Expense</option>
-                  </select>
-                )}
-                {role === "admin" && (
-                  <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-3 dark:border-gray-800">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (editId === t.id) handleUpdate();
-                        else {
-                          setEditId(t.id);
-                          setEditForm({
-                            ...t,
-                            date:
-                              (t.date && String(t.date).split("T")[0]) ||
-                              todayISO(),
-                          });
-                        }
-                      }}
-                      className="min-h-[44px] rounded-lg px-3 text-sm font-medium text-indigo-600 active:bg-indigo-50 dark:text-indigo-400 dark:active:bg-indigo-950/50"
-                    >
-                      {editId === t.id ? "Save" : "Edit"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setPendingDelete({
-                          id: t.id,
-                          label: t.category || "this row",
-                        })
-                      }
-                      className="min-h-[44px] rounded-lg px-3 text-sm font-medium text-red-600 active:bg-red-50 dark:text-red-400 dark:active:bg-red-950/50"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </li>
-            ))}
-            </ul>
-            <PaginationBar />
-          </div>
-
-        <div className="hidden lg:block">
-          <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm transition-shadow duration-200 [scrollbar-gutter:stable] hover:shadow-md motion-reduce:hover:shadow-sm dark:border-gray-700">
-            <table className="w-full min-w-[720px] table-fixed border-collapse text-left text-sm xl:min-w-full">
-              <thead>
-                <tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/80">
-                  <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
-                    Category
-                  </th>
-                  <th className="w-28 px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
-                    Amount
-                  </th>
-                  <th className="w-24 px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
-                    Type
-                  </th>
-                  <th className="w-36 px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
-                    Date
-                  </th>
-                  {role === "admin" && (
-                    <th className="w-40 px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
-                      Actions
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-gray-900">
-                {paginatedData.map((t) => (
-                  <tr
-                    key={t.id}
-                    className="transition-colors duration-150 hover:bg-gray-50/80 dark:hover:bg-gray-800/50"
-                  >
-                    <td className="px-4 py-3">
-                      {editId === t.id && role === "admin" ? (
-                        <input
-                          className="w-full max-w-xs rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-800"
+                          className="mb-2 w-full rounded border border-gray-300 px-2 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
                           value={editForm.category}
                           onChange={(e) =>
-                            setEditForm({
-                              ...editForm,
-                              category: e.target.value,
-                            })
+                            setEditForm({ ...editForm, category: e.target.value })
                           }
                         />
                       ) : (
-                        <span className="block truncate font-medium text-gray-900 dark:text-gray-100">
+                        <p className="truncate font-medium text-gray-900 dark:text-gray-100">
                           {t.category || "—"}
-                        </span>
+                        </p>
                       )}
-                    </td>
-                    <td className="px-4 py-3 tabular-nums text-gray-900 dark:text-gray-100">
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        {editId === t.id && role === "admin" ? (
+                          <input
+                            type="date"
+                            className="mt-1 w-full rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                            value={editForm.date || ""}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, date: e.target.value })
+                            }
+                          />
+                        ) : (
+                          <>
+                            {(t.date && String(t.date).split("T")[0]) || "—"}{" "}
+                            <span className="font-medium uppercase text-gray-600 dark:text-gray-300">
+                              · {t.type}
+                            </span>
+                          </>
+                        )}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
                       {editId === t.id && role === "admin" ? (
                         <input
                           type="number"
-                          className="w-full rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-800"
+                          className="w-28 rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
                           value={editForm.amount}
                           onChange={(e) =>
                             setEditForm({
@@ -708,86 +582,211 @@ function Transaction() {
                           }
                         />
                       ) : (
-                        `₹ ${t.amount?.toLocaleString?.() ?? t.amount}`
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      {editId === t.id && role === "admin" ? (
-                        <select
-                          className="w-full rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-800"
-                          value={editForm.type}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, type: e.target.value })
-                          }
+                        <p
+                          className={`text-lg font-semibold tabular-nums ${t.type === "income"
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-red-600 dark:text-red-400"
+                            }`}
                         >
-                          <option value="income">Income</option>
-                          <option value="expense">Expense</option>
-                        </select>
-                      ) : (
-                        <span className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
-                          {t.type}
-                        </span>
+                          ₹{t.amount?.toLocaleString?.() ?? t.amount}
+                        </p>
                       )}
-                    </td>
-                    <td className="px-4 py-3 tabular-nums text-gray-700 dark:text-gray-200">
-                      {editId === t.id && role === "admin" ? (
-                        <input
-                          type="date"
-                          className="w-full rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
-                          value={editForm.date || ""}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, date: e.target.value })
+                    </div>
+                  </div>
+                  {editId === t.id && role === "admin" && (
+                    <select
+                      className="mt-3 w-full rounded border border-gray-300 px-2 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+                      value={editForm.type}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, type: e.target.value })
+                      }
+                    >
+                      <option value="income">Income</option>
+                      <option value="expense">Expense</option>
+                    </select>
+                  )}
+                  {role === "admin" && (
+                    <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-3 dark:border-gray-800">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (editId === t.id) handleUpdate();
+                          else {
+                            setEditId(t.id);
+                            setEditForm({
+                              ...t,
+                              date:
+                                (t.date && String(t.date).split("T")[0]) ||
+                                todayISO(),
+                            });
                           }
-                        />
-                      ) : (
-                        (t.date && String(t.date).split("T")[0]) || "—"
-                      )}
-                    </td>
-                    {role === "admin" && (
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (editId === t.id) handleUpdate();
-                              else {
-                                setEditId(t.id);
-                                setEditForm({
-                                  ...t,
-                                  date:
-                                    (t.date && String(t.date).split("T")[0]) ||
-                                    todayISO(),
-                                });
-                              }
-                            }}
-                            className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
-                          >
-                            {editId === t.id ? "Save" : "Edit"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setPendingDelete({
-                                id: t.id,
-                                label: t.category || "this row",
-                              })
-                            }
-                            className="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-4">
+                        }}
+                        className="min-h-[44px] rounded-lg px-3 text-sm font-medium text-indigo-600 active:bg-indigo-50 dark:text-indigo-400 dark:active:bg-indigo-950/50"
+                      >
+                        {editId === t.id ? "Save" : "Edit"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPendingDelete({
+                            id: t.id,
+                            label: t.category || "this row",
+                          })
+                        }
+                        className="min-h-[44px] rounded-lg px-3 text-sm font-medium text-red-600 active:bg-red-50 dark:text-red-400 dark:active:bg-red-950/50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
             <PaginationBar />
           </div>
-        </div>
+
+          <div className="hidden lg:block">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm transition-shadow duration-200 [scrollbar-gutter:stable] hover:shadow-md motion-reduce:hover:shadow-sm dark:border-gray-700">
+              <table className="w-full min-w-[720px] table-fixed border-collapse text-left text-sm xl:min-w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/80">
+                    <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
+                      Category
+                    </th>
+                    <th className="w-28 px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
+                      Amount
+                    </th>
+                    <th className="w-24 px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
+                      Type
+                    </th>
+                    <th className="w-36 px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
+                      Date
+                    </th>
+                    {role === "admin" && (
+                      <th className="w-40 px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">
+                        Actions
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-gray-900">
+                  {paginatedData.map((t) => (
+                    <tr
+                      key={t.id}
+                      className="transition-colors duration-150 hover:bg-gray-50/80 dark:hover:bg-gray-800/50"
+                    >
+                      <td className="px-4 py-3">
+                        {editId === t.id && role === "admin" ? (
+                          <input
+                            className="w-full max-w-xs rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-800"
+                            value={editForm.category}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                category: e.target.value,
+                              })
+                            }
+                          />
+                        ) : (
+                          <span className="block truncate font-medium text-gray-900 dark:text-gray-100">
+                            {t.category || "—"}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 tabular-nums text-gray-900 dark:text-gray-100">
+                        {editId === t.id && role === "admin" ? (
+                          <input
+                            type="number"
+                            className="w-full rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-800"
+                            value={editForm.amount}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                amount: Number(e.target.value),
+                              })
+                            }
+                          />
+                        ) : (
+                          `₹ ${t.amount?.toLocaleString?.() ?? t.amount}`
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {editId === t.id && role === "admin" ? (
+                          <select
+                            className="w-full rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-800"
+                            value={editForm.type}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, type: e.target.value })
+                            }
+                          >
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                          </select>
+                        ) : (
+                          <span className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                            {t.type}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 tabular-nums text-gray-700 dark:text-gray-200">
+                        {editId === t.id && role === "admin" ? (
+                          <input
+                            type="date"
+                            className="w-full rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                            value={editForm.date || ""}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, date: e.target.value })
+                            }
+                          />
+                        ) : (
+                          (t.date && String(t.date).split("T")[0]) || "—"
+                        )}
+                      </td>
+                      {role === "admin" && (
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (editId === t.id) handleUpdate();
+                                else {
+                                  setEditId(t.id);
+                                  setEditForm({
+                                    ...t,
+                                    date:
+                                      (t.date && String(t.date).split("T")[0]) ||
+                                      todayISO(),
+                                  });
+                                }
+                              }}
+                              className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                            >
+                              {editId === t.id ? "Save" : "Edit"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPendingDelete({
+                                  id: t.id,
+                                  label: t.category || "this row",
+                                })
+                              }
+                              className="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-4">
+              <PaginationBar />
+            </div>
+          </div>
         </>
       )}
     </div>

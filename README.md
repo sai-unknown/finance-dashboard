@@ -1,6 +1,6 @@
 # Finance Dashboard
 
-A responsive **personal finance dashboard** built with React. It loads transactions from a local REST API ([json-server](https://github.com/typicode/json-server)), shows balances and charts on the **Dashboard**, supports CRUD-style management on **Transactions** (admin role), and surfaces trends plus CSV/JSON export on **Insights**.
+A responsive **personal finance dashboard** built with React. It loads transactions from a Vercel serverless API backed by Neon Postgres, shows balances and charts on the **Dashboard**, supports CRUD-style management on **Transactions** (admin role), and surfaces trends plus CSV/JSON export on **Insights**.
 
 ---
 
@@ -14,7 +14,7 @@ A responsive **personal finance dashboard** built with React. It loads transacti
 
 **Tech stack:** React 19, React Router 7, Recharts, Tailwind CSS, Create React App.
 
-**Data:** `db.json` holds a `transactions` array (`id`, `type`, `amount`, `category`, `date`). The UI expects the API at `http://localhost:5000/transactions`.
+**Data:** `transactions` table in Neon Postgres (`id`, `type`, `amount`, `category`, `date`).
 
 ---
 
@@ -56,26 +56,16 @@ cd finance-dashboard
 npm install
 ```
 
-### 2. Start the mock API
+### 2. Configure environment
 
-The app reads and writes transactions through json-server on **port 5000**.
-
-```bash
-npm run api
-```
-
-This watches [`db.json`](./db.json). You should see REST endpoints such as:
-
-- `GET http://localhost:5000/transactions`
-- `POST http://localhost:5000/transactions`
-- `PUT http://localhost:5000/transactions/:id`
-- `DELETE http://localhost:5000/transactions/:id`
-
-**Alternative (without npm script):**
+Create `.env.local` in project root:
 
 ```bash
-npx json-server@0.17.4 --watch db.json --port 5000
+DATABASE_URL=postgresql://...
+REACT_APP_API_URL=
 ```
+
+- Keep `REACT_APP_API_URL` empty to use same-origin `/transactions` on Vercel.
 
 ### 3. Start the React app
 
@@ -85,7 +75,7 @@ In a **second** terminal:
 npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Keep **both** processes running while developing.
+Open [http://localhost:3000](http://localhost:3000).
 
 ### 4. Roles
 
@@ -107,15 +97,13 @@ Use **Import CSV** with a header row:
 
 A tiny example file is at [`public/sample-transactions-import.csv`](./public/sample-transactions-import.csv).
 
-### 6. Optional API base URL
+### 6. Deploy on Vercel
 
-Create `.env` in the project root:
-
-```bash
-REACT_APP_API_URL=http://localhost:5000
-```
-
-Restart `npm start` after changing env vars. The same value is used for the global transaction fetch and transaction mutations.
+1. Import repository in Vercel.
+2. Add environment variable `DATABASE_URL` with your Neon connection string.
+3. Deploy and verify:
+   - `GET /transactions`
+   - `GET /api/transactions`
 
 ---
 
@@ -126,7 +114,6 @@ Restart `npm start` after changing env vars. The same value is used for the glob
 | `npm start` | Dev server at port 3000 (hot reload). |
 | `npm run build` | Production build in `build/`. |
 | `npm test` | Jest / React Testing Library (watch mode). |
-| `npm run api` | json-server watching `db.json` on port 5000. |
 | `npm run eject` | Irreversible CRA eject (only if you know you need it). |
 
 ---
@@ -135,8 +122,7 @@ Restart `npm start` after changing env vars. The same value is used for the glob
 
 | Issue | What to try |
 |-------|-------------|
-| Empty data / fetch errors | Ensure `npm run api` is running and nothing else uses port **5000**. |
-| CORS | json-server allows the CRA origin by default; if you change ports or host, adjust accordingly. |
+| Empty data / fetch errors | Verify `DATABASE_URL` is set in Vercel and `/api/transactions` returns data. |
 | Blank charts | Confirm transactions include valid `date` and `type` (`income` / `expense`). |
 
 ---
@@ -156,7 +142,7 @@ finance-dashboard/
 │   ├── App.js
 │   └── index.js
 ├── docs/screenshots/   # README visuals
-├── db.json             # json-server data
+├── api/                # Vercel serverless API routes
 └── README.md
 ```
 
@@ -166,13 +152,13 @@ finance-dashboard/
 
 - [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started)
 - [React documentation](https://react.dev/)
-- [json-server](https://github.com/typicode/json-server)
+- [Neon Postgres](https://neon.com/docs)
 
 ---
 
 ## Manual QA checklist
 
-Run `npm run api` and `npm start`, open DevTools **Console**, then verify:
+Run `npm start`, open DevTools **Console**, then verify:
 
 | Check | Expected |
 |-------|-----------|
