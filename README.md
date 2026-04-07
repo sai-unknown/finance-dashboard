@@ -63,9 +63,13 @@ Create `.env.local` in project root:
 ```bash
 DATABASE_URL=postgresql://...
 REACT_APP_API_URL=
+ADMIN_WRITE_TOKEN=
+REACT_APP_ADMIN_WRITE_TOKEN=
 ```
 
 - Keep `REACT_APP_API_URL` empty to use same-origin `/transactions` on Vercel.
+- `ADMIN_WRITE_TOKEN` is optional. If set, write APIs (`POST/PUT/DELETE`) require `x-admin-token`.
+- If you enable `ADMIN_WRITE_TOKEN`, set the same value in `REACT_APP_ADMIN_WRITE_TOKEN` for UI write actions.
 
 ### 3. Start the React app
 
@@ -101,6 +105,10 @@ A tiny example file is at [`public/sample-transactions-import.csv`](./public/sam
 
 1. Import repository in Vercel.
 2. Add environment variable `DATABASE_URL` with your Neon connection string.
+   - Optional hardening:
+     - `ADMIN_WRITE_TOKEN`
+     - `RATE_LIMIT_WINDOW_MS` (default `60000`)
+     - `RATE_LIMIT_MAX` (default `120`)
 3. Deploy and verify:
    - `GET /transactions`
    - `GET /api/transactions`

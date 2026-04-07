@@ -5,6 +5,14 @@ import ConfirmModal from "../components/ConfirmModal";
 import { parseTransactionsCSV } from "../utils/csvTransactions";
 import API_BASE from "../config/api.js";
 
+const WRITE_TOKEN = process.env.REACT_APP_ADMIN_WRITE_TOKEN;
+
+function buildWriteHeaders() {
+  const headers = { "Content-Type": "application/json" };
+  if (WRITE_TOKEN) headers["x-admin-token"] = WRITE_TOKEN;
+  return headers;
+}
+
 function todayISO() {
   return new Date().toISOString().split("T")[0];
 }
@@ -48,6 +56,7 @@ function Transaction() {
   const [pendingDelete, setPendingDelete] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState({ done: 0, total: 0 });
+  const [isSaving, setIsSaving] = useState(false);
 
   const [newTransaction, setNewTransaction] = useState({
     category: "",
@@ -107,7 +116,7 @@ function Transaction() {
     search.trim() !== "" || filter !== "all" || sortOrder !== "";
 
   const handleAdd = async () => {
-    if (role !== "admin") return;
+    if (role !== "admin" || isSaving) return;
     if (
       !newTransaction.category.trim() ||
       !newTransaction.amount ||
@@ -129,9 +138,10 @@ function Transaction() {
     };
 
     try {
+      setIsSaving(true);
       const res = await fetch(`${API_BASE}/api/transactions`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: buildWriteHeaders(),
         body: JSON.stringify(transaction),
       });
       if (!res.ok) {
@@ -155,6 +165,8 @@ function Transaction() {
       showToast("Transaction added.", "success");
     } catch {
       showToast("Could not save transaction. Check your network.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -162,6 +174,7 @@ function Transaction() {
     try {
       const res = await fetch(`${API_BASE}/api/transactions?id=${id}`, {
         method: "DELETE",
+        headers: WRITE_TOKEN ? { "x-admin-token": WRITE_TOKEN } : undefined,
       });
       if (!res.ok) {
         showToast("Could not delete transaction.");
@@ -200,7 +213,7 @@ function Transaction() {
     try {
       const res = await fetch(`${API_BASE}/api/transactions?id=${editForm.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: buildWriteHeaders(),
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
@@ -239,21 +252,29 @@ function Transaction() {
       return;
     }
 
+    if (parsed.rows.length > 1000) {
+      showToast("CSV too large. Please import up to 1000 rows at a time.");
+      return;
+    }
+
     setIsImporting(true);
     setImportProgress({ done: 0, total: parsed.rows.length });
     showToast(`Import started for ${parsed.rows.length} row(s).`, "success");
 
     const added = [];
+    let failed = 0;
     for (let i = 0; i < parsed.rows.length; i++) {
       const row = parsed.rows[i];
       try {
         const res = await fetch(`${API_BASE}/api/transactions`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: buildWriteHeaders(),
           body: JSON.stringify(row),
         });
         if (res.ok) added.push(await res.json());
+        else failed += 1;
       } catch {
+        failed += 1;
         break;
       } finally {
         setImportProgress({ done: i + 1, total: parsed.rows.length });
@@ -269,7 +290,7 @@ function Transaction() {
       showToast(`Imported ${added.length} transaction(s).`, "success");
     } else {
       showToast(
-        `Imported ${added.length} of ${parsed.rows.length}. Some rows failed or the API stopped responding.`
+        `Imported ${added.length} of ${parsed.rows.length}. Failed: ${failed}.`
       );
     }
   };
@@ -485,10 +506,11 @@ function Transaction() {
           </label>
           <button
             type="button"
+            disabled={isSaving}
             onClick={handleAdd}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-emerald-700 active:scale-[0.98] motion-reduce:active:scale-100"
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-emerald-700 active:scale-[0.98] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Save
+            {isSaving ? "Saving..." : "Save"}
           </button>
         </div>
       )}
