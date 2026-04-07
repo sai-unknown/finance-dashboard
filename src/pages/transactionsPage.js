@@ -489,11 +489,10 @@ function Transaction() {
           </p>
           <p className="mt-2 max-w-md text-sm text-gray-600 dark:text-gray-400">
             Switch to <strong className="font-semibold">Admin</strong> and add
-            your first transaction, import CSV, or seed data via{" "}
+            your first transaction, import a 
             <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs dark:bg-gray-800">
-              db.json
-            </code>
-            .
+              .csv
+            </code> file with following columns: type, amount, category, date.
           </p>
         </div>
       )}
