@@ -21,7 +21,13 @@ export function AppProvider({ children }) {
       })
       .then((data) => {
         if (cancelled) return;
-        setTransactions(Array.isArray(data) ? data : []);
+        const normalized = Array.isArray(data)
+          ? data.map((t) => ({
+              ...t,
+              amount: Number(t?.amount) || 0,
+            }))
+          : [];
+        setTransactions(normalized);
         setTransactionsError(null);
       })
       .catch(() => {
