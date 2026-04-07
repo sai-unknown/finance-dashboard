@@ -153,7 +153,7 @@ function Transaction() {
 
   const runDelete = async (id) => {
     try {
-      const res = await fetch(`${API_BASE}/api/transactions/${id}`, {
+      const res = await fetch(`${API_BASE}/api/transactions?id=${id}`, {
         method: "DELETE",
       });
       if (!res.ok) {
@@ -191,7 +191,7 @@ function Transaction() {
     };
 
     try {
-      const res = await fetch(`${API_BASE}/api/transactions/${editForm.id}`, {
+      const res = await fetch(`${API_BASE}/api/transactions?id=${editForm.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
