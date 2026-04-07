@@ -46,6 +46,8 @@ function Transaction() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState({ done: 0, total: 0 });
 
   const [newTransaction, setNewTransaction] = useState({
     category: "",
@@ -133,7 +135,12 @@ function Transaction() {
         body: JSON.stringify(transaction),
       });
       if (!res.ok) {
-        showToast("Could not save transaction. Is the API running?");
+        let msg = "Could not save transaction. Is the API running?";
+        try {
+          const body = await res.json();
+          if (body?.error) msg = `Could not save transaction: ${body.error}`;
+        } catch {}
+        showToast(msg);
         return;
       }
       const saved = await res.json();
@@ -213,7 +220,7 @@ function Transaction() {
   const handleCSVImport = async (e) => {
     const file = e.target.files?.[0];
     e.target.value = "";
-    if (!file || role !== "admin") return;
+    if (!file || role !== "admin" || isImporting) return;
 
     let text;
     try {
@@ -232,10 +239,15 @@ function Transaction() {
       return;
     }
 
+    setIsImporting(true);
+    setImportProgress({ done: 0, total: parsed.rows.length });
+    showToast(`Import started for ${parsed.rows.length} row(s).`, "success");
+
     const added = [];
-    for (const row of parsed.rows) {
+    for (let i = 0; i < parsed.rows.length; i++) {
+      const row = parsed.rows[i];
       try {
-        const res = await fetch(`${API_BASE }/api/transactions`, {
+        const res = await fetch(`${API_BASE}/api/transactions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(row),
@@ -243,8 +255,11 @@ function Transaction() {
         if (res.ok) added.push(await res.json());
       } catch {
         break;
+      } finally {
+        setImportProgress({ done: i + 1, total: parsed.rows.length });
       }
     }
+    setIsImporting(false);
 
     if (added.length) {
       setTransactions((prev) => [...prev, ...added]);
@@ -411,11 +426,17 @@ function Transaction() {
           />
           <button
             type="button"
+            disabled={isImporting}
             className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
             onClick={() => csvInputRef.current?.click()}
           >
-            Import CSV
+            {isImporting ? "Importing..." : "Import CSV"}
           </button>
+          {isImporting && (
+            <p className="self-center text-xs text-gray-600 dark:text-gray-300">
+              Import progress: {importProgress.done}/{importProgress.total}
+            </p>
+          )}
         </div>
       )}
 

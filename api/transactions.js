@@ -1,5 +1,4 @@
 import { Pool } from "pg";
-import crypto from "crypto";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -44,8 +43,8 @@ export default async function handler(req, res) {
       }
 
       const result = await pool.query(
-        "INSERT INTO transactions (id, amount, category, type, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-        [crypto.randomUUID(), parsedAmount, category, type, parsedDate]
+        "INSERT INTO transactions (amount, category, type, date) VALUES ($1, $2, $3, $4) RETURNING *",
+        [parsedAmount, category, type, parsedDate]
       );
 
       return res.status(201).json(normalize(result.rows[0]));
